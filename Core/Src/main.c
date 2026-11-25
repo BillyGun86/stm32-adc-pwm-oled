@@ -51,13 +51,11 @@ TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 volatile uint16_t adc_value[2] = { 0, 0 };
-volatile uint8_t adc_ready = 0;
 float voltage[2];
 
 uint32_t last_display_time = 0;
 char str_buf[32];
 
-//volatile HAL_StatusTypeDef oled_ok;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,11 +71,6 @@ static void MX_I2C2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_ADC_ConvCpltCallBack(ADC_HandleTypeDef *hadc) {
-	if (hadc->Instance == ADC1) {
-		adc_ready = 1;
-	}
-}
 /* USER CODE END 0 */
 
 /**
@@ -118,13 +111,6 @@ int main(void) {
 
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-
-//	__HAL_RCC_I2C2_FORCE_RESET();
-//	HAL_Delay(5);
-//	__HAL_RCC_I2C2_RELEASE_RESET();
-	MX_I2C2_Init();
-
-//	oled_ok = HAL_I2C_IsDeviceReady(&hi2c2, (0x3C << 1), 3, 100);
 	ssd1306_Init();
 	/* USER CODE END 2 */
 
@@ -136,9 +122,6 @@ int main(void) {
 		/* USER CODE BEGIN 3 */
 		if (HAL_GetTick() - last_display_time >= 100) {
 			last_display_time = HAL_GetTick();
-
-//			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, adc_value[0]);
-//			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, adc_value[1]);
 
 			voltage[0] = (adc_value[0] * 3.3f) / 4095.0f;
 			voltage[1] = (adc_value[1] * 3.3f) / 4095.0f;
@@ -158,12 +141,9 @@ int main(void) {
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, adc_value[0]);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, adc_value[1]);
 
-//		voltage[0] = (adc_value[0] * 3.3f) / 4095.0f;
-//		voltage[1] = (adc_value[1] * 3.3f) / 4095.0f;
-
 	}
+	/* USER CODE END 3 */
 }
-/* USER CODE END 3 */
 
 /**
  * @brief System Clock Configuration
